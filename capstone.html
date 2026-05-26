@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đồ án: Thiết kế & Vận hành Hệ thống Đám mây</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        .font-mono { font-family: 'Fira Code', monospace; }
+
+        /* Animations */
+        .fade-in-up { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        
+        .pulse-red { animation: pulseRed 2s infinite; }
+        @keyframes pulseRed {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Checkbox styling */
+        .task-checkbox:checked + label { text-decoration: line-through; color: #64748b; }
+        .task-checkbox:checked + label .check-icon { background-color: #10b981; border-color: #10b981; }
+        .task-checkbox:checked + label .check-icon i { display: block; }
+        
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.5s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#2563eb', secondary: '#475569', success: '#10b981', danger: '#ef4444', warning: '#f59e0b' }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="antialiased pb-24">
+
+    <!-- Top Navigation -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-slate-900 text-white rounded-lg flex items-center justify-center font-bold text-xl shadow-md">
+                    <i class="fa-solid fa-server"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-800 tracking-tight">Capstone Project</h1>
+                    <p class="text-xs font-semibold text-primary uppercase tracking-wider">Cloud Computing & SRE</p>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center space-x-4">
+                <span class="text-sm text-slate-500"><i class="fa-regular fa-clock mr-1"></i> Thời gian: 2 Tuần</span>
+                <span class="text-sm text-slate-500"><i class="fa-solid fa-users mr-1"></i> Nhóm: 3-5 Sinh viên</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="bg-gradient-to-b from-blue-50 to-white pt-16 pb-12 border-b border-slate-200">
+        <div class="max-w-4xl mx-auto px-4 text-center fade-in-up">
+            <span class="bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full text-sm mb-4 inline-block border border-blue-200">Nhiệm vụ Cuối khóa</span>
+            <h2 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">Thiết kế, Triển khai & Vận hành <br>Hệ thống Chuẩn Production</h2>
+            <p class="text-lg text-slate-600 mb-8 leading-relaxed max-w-3xl mx-auto">
+                Khách hàng <b>EduTech Startup</b> đang chuẩn bị ra mắt sản phẩm mới. Tuy nhiên, họ chỉ có mã nguồn mà chưa có hạ tầng. Nhiệm vụ của đội ngũ (Nhóm sinh viên) là đưa ứng dụng này lên nền tảng AWS EC2, đảm bảo tính <b>bảo mật, chịu tải tốt, và được giám sát 24/7</b>.
+            </p>
+            <div class="flex justify-center gap-4">
+                <a href="#nhiem-vu" class="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition">Xem Nhiệm vụ chi tiết</a>
+                <a href="#danh-gia" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-bold py-3 px-6 rounded-lg transition">Tiêu chí Đánh giá</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" id="nhiem-vu">
+        
+        <div class="grid lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: The 4 Phases -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Phase 1 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-slate-800"><span class="text-primary mr-2">Giai đoạn 1:</span> Triển khai Ứng dụng (Deployment)</h3>
+                        <i class="fa-brands fa-docker text-2xl text-blue-500"></i>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-slate-600 mb-4">Khách hàng cung cấp một Repository Github chứa mã nguồn của một ứng dụng Web 3 lớp mang tên <b>ProShop</b> (Frontend React, Backend NodeJS, Database MongoDB). Bạn không cần code, bạn chỉ cần clone về và <b>chạy nó</b>.</p>
+                        
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-5 flex items-center">
+                            <i class="fa-brands fa-github text-3xl text-slate-700 mr-4"></i>
+                            <div>
+                                <p class="text-xs text-blue-600 font-bold uppercase tracking-wider mb-0.5">Mã nguồn Dự án (Repository)</p>
+                                <a href="https://github.com/bannguyenhuce/proshop_mern" target="_blank" class="text-sm font-mono text-slate-800 hover:text-primary hover:underline break-all">https://github.com/bannguyenhuce/proshop_mern</a>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <input type="checkbox" id="t1-1" class="task-checkbox hidden" onchange="updateOverallProgress()">
+                                <label for="t1-1" class="flex items-start cursor-pointer group w-full">
+                                    <div class="check-icon w-5 h-5 border-2 border-slate-300 rounded mr-3 mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors group-hover:border-primary">
+                                        <i class="fa-solid fa-check text-white text-xs hidden"></i>
+                                    </div>
+                                    <span class="text-slate-700">Đọc mã nguồn và viết file <code>Dockerfile</code> cho dịch vụ Frontend và Backend.</span>
+                                </label>
+                            </div>
+                            <div class="flex items-start">
+                                <input type="checkbox" id="t1-2" class="task-checkbox hidden" onchange="updateOverallProgress()">
+                                <label for="t1-2" class="flex items-start cursor-pointer group w-full">
+                                    <div class="check-icon w-5 h-5 border-2 border-slate-300 rounded mr-3 mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors group-hover:border-primary">
+                                        <i class="fa-solid fa-check text-white text-xs hidden"></i>
+                                    </div>
+                                    <span class="text-slate-700">Viết file <code>docker-compose.yml</code> để liên kết Frontend, Backend và Database chạy chung một mạng lưới nội bộ.</span>
+                                </label>
+                            </div>
+                            <div class="flex items-start">
+                                <input type="checkbox" id="t1-3" class="task-checkbox hidden" onchange="updateOverallProgress()">
+                                <label for="t1-3" class="flex items-start cursor-pointer group w-full">
+                                    <div class="check-icon w-5 h-5 border-2 border-slate-300 rounded mr-3 mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors group-hover:border-primary">
+                                        <i class="fa-solid fa-check text-white text-xs hidden"></i>
+                                    </div>
+                                    <span class="text-slate-700">Khởi tạo AWS EC2 (Ubuntu) và đưa ứng dụng lên chạy thành công.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-slate-800"><span class="text-success mr-2">Giai đoạn 2:</span> Kiến trúc & Bảo mật (Security)</h3>
+                        <i class="fa-solid fa-shield-halved text-2xl text-green-500"></i>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-slate-600 mb-4">Hệ thống hiện tại có thể bị hack dễ dàng nếu mở trực tiếp cổng Database ra ngoài Internet. Áp dụng nguyên tắc Đặc quyền tối thiểu (Zero Trust).</p>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <input type="checkbox" id="t2-1" class="task-checkbox hidden" onchange="updateOverallProgress()">
+                                <label for="t2-1" class="flex items-start cursor-pointer group w-full">
+                                    <div class="check-icon w-5 h-5 border-2 border-slate-300 rounded mr-3 mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors group-hover:border-success">
+                                        <i class="fa-solid fa-check text-white text-xs hidden"></i>
+                                    </div>
+                                    <span class="text-slate-700">Cấu hình <b>Nginx làm Reverse Proxy</b> để nhận request ở cổng 80 và điều phối vào các container bên trong.</span>
+                                </label>
+                            </div>
+                            <div class="flex items-start">
+                                <input type="checkbox" id="t2-2" class="task-checkbox hidden" onchange="updateOverallProgress()">
+                                <label for="t2-2" class="flex items-start cursor-pointer group w-full">
+                                    <div class="check-icon w-5 h-5 border-2 border-slate-300 rounded mr-3 mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors group-hover:border-success">
+                                        <i class="fa-solid fa-check text-white text-xs hidden"></i>
+                                    </div>
+                                    <span class="text-slate-700">Thiết lập <b>AWS Security Group</b>: CHỈ mở Port 22 (từ IP cá nhân), Port 80, 443 ra Internet. ĐÓNG toàn bộ các port khác (như 27017 của DB, 3000 của Nodejs).</span>
+                                </label>
+                            </div>
+                            <div class="flex items-start">
+                                <input type="checkbox" id="t2-3" class="task-checkbox hidden" onchange="updateOverallProgress()">
+                                <label for="t2-3" class="flex items-start cursor-pointer group w-full">
+                                    <div class="check-icon w-5 h-5 border-2 border-slate-300 rounded mr-3 mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors group-hover:border-success">
+                                        <i class="fa-solid fa-check text-white text-xs hidden"></i>
+                                    </div>
+                                    <span class="text-slate-700">Cài đặt chứng chỉ SSL/TLS miễn phí với <b>Certbot (Let's Encrypt)</b> để website chạy trên HTTPS.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden fade-in-up" style="animation-delay: 0.3s;">
+                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-slate-800"><span class="text-purple-600 mr-2">Giai đoạn 3:</span> Giám sát Hệ thống (Observability)</h3>
+                        <i class="fa-solid fa-chart-line text-2xl text-purple-500"></i>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-slate-600 mb-4">Áp dụng kiến thức PLAG Stack đã học. Đội ngũ kỹ sư cần một bảng điều khiển tập trung để theo dõi "sức khỏe" của toàn bộ hệ thống.</p>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <input type="checkbox" id="t3-1" class="task-checkbox hidden" onchange="updateOverallProgress()">
+                                <label for="t3-1" class="flex items-start cursor-pointer group w-full">
+                                    <div class="check-icon w-5 h-5 border-2 border-slate-300 rounded mr-3 mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors group-hover:border-purple-600">
+                                        <i class="fa-solid fa-check text-white text-xs hidden"></i>
+                                    </div>
+                                    <span class="text-slate-700">Cài đặt <b>Prometheus & Node Exporter</b> để thu thập chỉ số CPU, RAM, Disk của máy chủ EC2.</span>
+                                </label>
+                            </div>
+                            <div class="flex items-start">
+                                <input type="checkbox" id="t3-2" class="task-checkbox hidden" onchange="updateOverallProgress()">
+                                <label for="t3-2" class="flex items-start cursor-pointer group w-full">
+                                    <div class="check-icon w-5 h-5 border-2 border-slate-300 rounded mr-3 mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors group-hover:border-purple-600">
+                                        <i class="fa-solid fa-check text-white text-xs hidden"></i>
+                                    </div>
+                                    <span class="text-slate-700">Cài đặt <b>Loki & Promtail</b> để thu thập log Nginx (Access log & Error log) và log của Docker containers.</span>
+                                </label>
+                            </div>
+                            <div class="flex items-start">
+                                <input type="checkbox" id="t3-3" class="task-checkbox hidden" onchange="updateOverallProgress()">
+                                <label for="t3-3" class="flex items-start cursor-pointer group w-full">
+                                    <div class="check-icon w-5 h-5 border-2 border-slate-300 rounded mr-3 mt-0.5 flex items-center justify-center flex-shrink-0 transition-colors group-hover:border-purple-600">
+                                        <i class="fa-solid fa-check text-white text-xs hidden"></i>
+                                    </div>
+                                    <span class="text-slate-700">Xây dựng Dashboard trên <b>Grafana</b> và cấu hình <b>AlertManager</b> bắn cảnh báo qua Telegram khi CPU > 85%.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Progress & Chaos Engineering -->
+            <div class="space-y-8">
+                
+                <!-- Progress Tracker -->
+                <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-xl sticky top-24 fade-in-up" style="animation-delay: 0.4s;">
+                    <h3 class="text-lg font-bold mb-6 border-b border-slate-700 pb-2">Tiến độ Nhóm</h3>
+                    
+                    <div class="flex justify-center mb-6 relative">
+                        <svg class="w-32 h-32" viewBox="0 0 120 120">
+                            <circle class="text-slate-700 stroke-current" stroke-width="8" cx="60" cy="60" r="50" fill="transparent"></circle>
+                            <circle id="progress-circle" class="text-success stroke-current progress-ring__circle" stroke-width="8" stroke-linecap="round" cx="60" cy="60" r="50" fill="transparent" stroke-dasharray="314.159" stroke-dashoffset="314.159"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="progress-percentage" class="text-3xl font-extrabold tracking-tighter">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between text-sm text-slate-400 mb-2">
+                        <span>Hoàn thành: <span id="tasks-done" class="text-white font-bold">0</span>/9</span>
+                        <span id="status-text" class="text-yellow-400 font-semibold">Đang thực hiện</span>
+                    </div>
+                </div>
+
+                <!-- Phase 4: Chaos Engineering (Interactive) -->
+                <div class="bg-white rounded-2xl shadow-sm border border-danger overflow-hidden fade-in-up" style="animation-delay: 0.5s;">
+                    <div class="bg-red-50 px-6 py-4 border-b border-red-200">
+                        <h3 class="text-lg font-bold text-red-700"><i class="fa-solid fa-skull-crossbones mr-2"></i>Giai đoạn 4: Thử thách Sức chịu đựng</h3>
+                    </div>
+                    <div class="p-6 text-sm">
+                        <p class="text-slate-600 mb-4">Vào ngày bảo vệ, Giảng viên sẽ đóng vai Hacker thực hiện một cuộc tấn công DDoS bằng công cụ Apache Benchmark (ab). Hệ thống của bạn có phát hiện được không?</p>
+                        
+                        <!-- Interactive Simulator -->
+                        <div class="bg-slate-800 rounded-lg p-4 mb-4 text-center">
+                            <div class="flex justify-between items-end mb-2">
+                                <span class="text-slate-300 font-mono text-xs">CPU Usage</span>
+                                <span id="cpu-value" class="text-green-400 font-bold font-mono text-lg">12%</span>
+                            </div>
+                            <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
+                                <div id="cpu-bar" class="bg-green-400 h-full transition-all duration-300" style="width: 12%"></div>
+                            </div>
+                        </div>
+
+                        <button id="btn-attack" onclick="simulateAttack()" class="w-full bg-slate-100 hover:bg-slate-200 text-red-600 border border-red-200 font-bold py-3 px-4 rounded-lg transition flex justify-center items-center">
+                            <i class="fa-solid fa-fire mr-2"></i> Kích hoạt Giả lập Tấn công
+                        </button>
+
+                        <!-- Fake Alert Toast -->
+                        <div id="alert-toast" class="hidden mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative shadow-sm" role="alert">
+                            <strong class="font-bold"><i class="fa-brands fa-telegram mr-1"></i> Telegram:</strong>
+                            <span class="block sm:inline text-xs mt-1">CẢNH BÁO: CPU vượt ngưỡng 85%! Hệ thống đang bị quá tải request.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-50 px-6 py-4 border-t border-slate-200">
+                        <h4 class="font-bold text-slate-800 text-sm mb-2">Nhiệm vụ báo cáo:</h4>
+                        <ul class="list-disc list-inside text-xs text-slate-600 space-y-1">
+                            <li>Xác nhận nhận được Alert.</li>
+                            <li>Dùng LogQL tìm ra địa chỉ IP nào đang gửi request bất thường.</li>
+                            <li>Viết <b>Post-mortem Report</b> (Nguyên nhân, Tác động, Cách khắc phục: ví dụ chặn IP ở Nginx).</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Rubric / Evaluation Section -->
+    <section id="danh-gia" class="bg-slate-50 py-16 border-t border-slate-200 mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-slate-900">Tiêu chí Đánh giá (Rubric)</h2>
+                <p class="text-slate-600 mt-2">Dự án được chấm theo thang điểm 10, tập trung vào tính thực tế và tư duy kỹ sư.</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-800 text-white text-sm uppercase tracking-wider">
+                            <th class="p-4 font-semibold">Tiêu chí</th>
+                            <th class="p-4 font-semibold">Xuất sắc (9-10đ)</th>
+                            <th class="p-4 font-semibold">Đạt yêu cầu (5-8đ)</th>
+                            <th class="p-4 font-semibold hidden md:table-cell">Trọng số</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-slate-600 text-sm">
+                        <tr class="border-b border-slate-200 hover:bg-slate-50">
+                            <td class="p-4 font-bold text-slate-800 border-r border-slate-200">1. Kiến trúc & Vận hành</td>
+                            <td class="p-4 border-r border-slate-200">Web chạy mượt mà, cấu hình Docker Compose chuẩn, tái sử dụng cao. Có dùng Nginx Reverse Proxy.</td>
+                            <td class="p-4 border-r border-slate-200">Chạy được web nhưng cấu hình còn thủ công, phụ thuộc môi trường.</td>
+                            <td class="p-4 font-bold text-center text-primary hidden md:table-cell">30%</td>
+                        </tr>
+                        <tr class="border-b border-slate-200 hover:bg-slate-50">
+                            <td class="p-4 font-bold text-slate-800 border-r border-slate-200">2. Bảo mật (Security)</td>
+                            <td class="p-4 border-r border-slate-200">Security Group thiết lập chuẩn xác. Có SSL/TLS (HTTPS). Port DB đóng kín.</td>
+                            <td class="p-4 border-r border-slate-200">Chạy được HTTP. Security Group có mở nhưng còn lỏng lẻo (Mở All Traffic).</td>
+                            <td class="p-4 font-bold text-center text-success hidden md:table-cell">30%</td>
+                        </tr>
+                        <tr class="border-b border-slate-200 hover:bg-slate-50">
+                            <td class="p-4 font-bold text-slate-800 border-r border-slate-200">3. Giám sát (Monitoring)</td>
+                            <td class="p-4 border-r border-slate-200">Dashboard Grafana trực quan. AlertManager bắn Telegram ngay khi test tải. Trace được log lỗi.</td>
+                            <td class="p-4 border-r border-slate-200">Cài được tool nhưng chưa biết cách truy vấn LogQL hoặc cấu hình Alert sai.</td>
+                            <td class="p-4 font-bold text-center text-purple-600 hidden md:table-cell">25%</td>
+                        </tr>
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-bold text-slate-800 border-r border-slate-200">4. Báo cáo Post-mortem</td>
+                            <td class="p-4 border-r border-slate-200">Tìm đúng nguyên nhân lúc bị tấn công, đưa ra giải pháp khắc phục triệt để. Present rõ ràng.</td>
+                            <td class="p-4 border-r border-slate-200">Báo cáo sơ sài, không phân tích được nguyên nhân gốc rễ (Root cause).</td>
+                            <td class="p-4 font-bold text-center text-orange-500 hidden md:table-cell">15%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <section id="dang-ky" class="max-w-4xl mx-auto px-4 py-16 fade-in-up" style="animation-delay: 0.6s;">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+            <div class="bg-primary px-8 py-6 text-white">
+                <h3 class="text-2xl font-bold">🎯 Đăng ký Nhóm Dự án</h3>
+                <p class="text-blue-100 text-sm mt-1">Vui lòng điền chính xác thông tin đăng ký của nhóm.</p>
+            </div>
+            
+            <form id="registrationForm" class="p-8 space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-slate-700">Tên nhóm <span class="text-red-500">*</span></label>
+                        <input type="text" name="groupName" required placeholder="VD: DevOps-Team-01" 
+                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-slate-700">Lớp môn học <span class="text-red-500">*</span></label>
+                        <input type="text" name="className" required placeholder="VD: 67PM1" 
+                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-slate-700">Họ và tên (Trưởng nhóm) <span class="text-red-500">*</span></label>
+                        <input type="text" name="studentName" required placeholder="Nguyễn Văn A" 
+                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-slate-700">Mã sinh viên <span class="text-red-500">*</span></label>
+                        <input type="text" name="studentId" required placeholder="123456" 
+                            class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-semibold text-slate-700">Mô tả (Thành viên khác & kiến trúc) <span class="text-red-500">*</span></label>
+                    <textarea name="description" required rows="4" placeholder="Liệt kê danh sách thành viên trong nhóm (gồm tên + mã sinh viên + lớp môn học) và mô tả ngắn gọn kiến trúc nếu cần..." 
+                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"></textarea>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" id="submitBtn" class="w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition flex justify-center items-center">
+                        <i class="fa-solid fa-paper-plane mr-2"></i> Gửi đăng ký ngay
+                    </button>
+                </div>
+            </form>
+
+            <div id="formMessage" class="hidden mx-8 mb-8 p-4 rounded-lg text-center font-semibold"></div>
+        </div>
+    </section>
+    <section id="hoi-dap" class="max-w-4xl mx-auto px-4 pb-16 fade-in-up" style="animation-delay: 0.7s;">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+        <div class="bg-indigo-600 px-8 py-6 text-white">
+            <h3 class="text-2xl font-bold">💬 Đặt câu hỏi cho Giảng viên</h3>
+            <p class="text-indigo-100 text-sm mt-1">Mọi thắc mắc về kỹ thuật hoặc quy trình sẽ được giải đáp tại đây.</p>
+        </div>
+        
+        <form id="qa-form" class="p-8 space-y-6">
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-slate-700">Tên nhóm / Họ và tên <span class="text-red-500">*</span></label>
+                <input type="text" name="groupName" required placeholder="Nhập tên nhóm hoặc tên của bạn" 
+                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-sm font-semibold text-slate-700">Câu hỏi thắc mắc <span class="text-red-500">*</span></label>
+                <textarea name="question" required rows="4" placeholder="Mô tả chi tiết vấn đề bạn đang gặp phải..." 
+                    class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"></textarea>
+            </div>
+
+            <div class="pt-2">
+                <button type="submit" id="qa-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition flex justify-center items-center">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> Gửi câu hỏi cho Giảng viên
+                </button>
+            </div>
+            
+            <div id="qa-msg" class="hidden p-4 rounded-lg text-center font-semibold mt-4"></div>
+        </form>
+    </div>
+</section>
+
+<script>
+    const qaForm = document.getElementById('qa-form');
+    const qaBtn = document.getElementById('qa-submit-btn');
+    const qaMsg = document.getElementById('qa-msg');
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbysR1mSQdDlwoLVogvHaIdGLJZ59pEQKj0VJLba7Lk0LoacgY3ja0E6-vw72y93QgOIbQ/exec'; // Dùng chung URL với form đăng ký
+
+    qaForm.addEventListener('submit', e => {
+        e.preventDefault();
+        qaBtn.disabled = true;
+        qaBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang gửi...';
+
+        fetch(scriptURL, { 
+            method: 'POST', 
+            body: new FormData(qaForm),
+            mode: 'no-cors' 
+        })
+        .then(() => {
+            qaMsg.innerHTML = "✅ Câu hỏi của bạn đã được gửi tới giảng viên!";
+            qaMsg.classList.remove('hidden', 'bg-red-100', 'text-red-700');
+            qaMsg.classList.add('bg-green-100', 'text-green-700');
+            qaForm.reset();
+            qaBtn.disabled = false;
+            qaBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> Gửi câu hỏi';
+        })
+        .catch(error => {
+            qaMsg.innerHTML = "❌ Lỗi: Không thể gửi câu hỏi.";
+            qaMsg.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+            qaMsg.classList.add('bg-red-100', 'text-red-700');
+            qaBtn.disabled = false;
+            console.error('Error!', error.message);
+        });
+    });
+
+        
+        const form = document.getElementById('registrationForm');
+        const btn = document.getElementById('submitBtn');
+        const msg = document.getElementById('formMessage');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang xử lý...';
+
+            fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors'})
+                .then(response => {
+                    msg.innerHTML = "🎉 Chúc mừng! Nhóm đã đăng ký thành công.";
+                    msg.classList.remove('hidden', 'bg-red-100', 'text-red-700');
+                    msg.classList.add('bg-green-100', 'text-green-700');
+                    form.reset();
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> Gửi đăng ký ngay';
+                })
+                .catch(error => {
+                    msg.innerHTML = "❌ Có lỗi xảy ra. Vui lòng thử lại sau.";
+                    msg.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+                    msg.classList.add('bg-red-100', 'text-red-700');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> Gửi đăng ký ngay';
+                    console.error('Error!', error.message);
+                });
+        });
+    </script>
+
+    <!-- Scripts -->
+    <script>
+        // 1. Progress Tracker Logic
+        const totalTasks = 9;
+        const progressCircle = document.getElementById('progress-circle');
+        const circumference = 50 * 2 * Math.PI;
+
+        function updateOverallProgress() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            let completed = 0;
+            checkboxes.forEach(cb => { if(cb.checked) completed++; });
+
+            // Update Text
+            document.getElementById('tasks-done').innerText = completed;
+            const percent = Math.round((completed / totalTasks) * 100);
+            document.getElementById('progress-percentage').innerText = percent + '%';
+
+            // Update Status
+            const statusText = document.getElementById('status-text');
+            if (percent === 100) {
+                statusText.innerText = "Đã sẵn sàng Bảo vệ!";
+                statusText.className = "text-success font-bold";
+            } else {
+                statusText.innerText = "Đang thực hiện...";
+                statusText.className = "text-warning font-semibold";
+            }
+
+            // Update SVG Circle
+            const offset = circumference - (percent / 100) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+        }
+
+        // 2. Chaos Engineering Simulator Logic
+        let isAttacking = false;
+        let cpuInterval;
+
+        function simulateAttack() {
+            if (isAttacking) return;
+            isAttacking = true;
+
+            const btn = document.getElementById('btn-attack');
+            const cpuBar = document.getElementById('cpu-bar');
+            const cpuValue = document.getElementById('cpu-value');
+            const alertToast = document.getElementById('alert-toast');
+
+            // UI Changes for Button
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang tấn công hệ thống...';
+            btn.classList.add('pulse-red', 'cursor-not-allowed', 'opacity-80');
+            btn.disabled = true;
+
+            let currentCpu = 12;
+
+            // Simulate CPU Spike
+            cpuInterval = setInterval(() => {
+                // Randomly increase CPU up to 98%
+                if (currentCpu < 95) {
+                    currentCpu += Math.floor(Math.random() * 20) + 10;
+                    if(currentCpu > 98) currentCpu = 98;
+                } else {
+                    currentCpu = 95 + Math.floor(Math.random() * 4); // Fluctuates at top
+                }
+
+                cpuValue.innerText = currentCpu + '%';
+                cpuBar.style.width = currentCpu + '%';
+
+                // Color changing based on threshold
+                if (currentCpu > 85) {
+                    cpuBar.classList.replace('bg-green-400', 'bg-red-500');
+                    cpuValue.classList.replace('text-green-400', 'text-red-500');
+                    alertToast.classList.remove('hidden'); // Show Alert
+                } else if (currentCpu > 60) {
+                    cpuBar.classList.replace('bg-green-400', 'bg-yellow-400');
+                    cpuValue.classList.replace('text-green-400', 'text-yellow-400');
+                }
+
+            }, 500);
+
+            // Auto recover after 8 seconds
+            setTimeout(() => {
+                clearInterval(cpuInterval);
+                isAttacking = false;
+                
+                // Reset Button
+                btn.innerHTML = '<i class="fa-solid fa-rotate-right mr-2"></i> Thử lại lần nữa';
+                btn.classList.remove('pulse-red', 'cursor-not-allowed', 'opacity-80');
+                btn.disabled = false;
+
+                // Recover CPU
+                cpuBar.classList.remove('bg-red-500', 'bg-yellow-400');
+                cpuBar.classList.add('bg-green-400');
+                cpuValue.classList.remove('text-red-500', 'text-yellow-400');
+                cpuValue.classList.add('text-green-400');
+                
+                cpuBar.style.width = '15%';
+                cpuValue.innerText = '15%';
+
+                // Hide Alert slowly
+                setTimeout(() => { alertToast.classList.add('hidden'); }, 2000);
+
+            }, 8000);
+        }
+    </script>
+</body>
+</html>
