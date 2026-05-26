@@ -3,8 +3,8 @@
 domains=(nguyenbodoi.duckdns.org)
 rsa_key_size=4096
 data_path="./certbot"
-email="your_email@gmail.com" # Tùy chọn, để Let's Encrypt gửi mail nhắc gia hạn
-staging=0 # Đặt thành 1 nếu test nhiều lần để tránh bị block IP
+email="phamluongnguyentxpt@gmail.com" # Tùy chọn, để Let's Encrypt gửi mail nhắc gia hạn
+staging=0# Đặt thành 1 nếu test nhiều lần để tránh bị block IP
 
 if [ -d "$data_path" ]; then
   read -p "Cảnh báo: Thư mục certbot đã tồn tại. Bạn có muốn xóa chứng chỉ cũ và thay thế mới? (y/N) " decision
