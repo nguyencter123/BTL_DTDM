@@ -53,5 +53,57 @@ services:
       - ./certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
+  # ----------------------------------------------------
+  # GIAI ĐOẠN 3: PLAG STACK (GIÁM SÁT & CẢNH BÁO)
+  # ----------------------------------------------------
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: proshop-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    depends_on:
+      - node-exporter
+      - cadvisor
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: proshop-node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: proshop-cadvisor
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      
+  grafana:
+    image: grafana/grafana:latest
+    container_name: proshop-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000" # Mở cổng 3000 ra ngoài để truy cập giao diện giám sát
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
 volumes:
   mongo_data:
+  grafana_data:
