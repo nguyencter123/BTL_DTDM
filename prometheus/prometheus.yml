@@ -10,8 +10,3 @@ scrape_configs:
     # Lấy dữ liệu phần cứng máy chủ AWS (CPU, RAM, Disk)
     static_configs:
       - targets: ['node-exporter:9100']
-
-  - job_name: 'cadvisor'
-    # Lấy dữ liệu của từng Docker Container (Frontend, Backend, MongoDB...)
-    static_configs:
-      - targets: ['cadvisor:8080']
