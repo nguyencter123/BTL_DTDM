@@ -66,6 +66,7 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
     depends_on:
       - node-exporter
+      - cadvisor
 
   node-exporter:
     image: prom/node-exporter:latest
@@ -80,6 +81,17 @@ services:
       - '--path.rootfs=/rootfs'
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: proshop-cadvisor
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
       
   grafana:
     image: grafana/grafana:latest
